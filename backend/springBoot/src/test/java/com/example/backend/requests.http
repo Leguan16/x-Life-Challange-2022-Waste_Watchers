@@ -1,0 +1,33 @@
+POST http://localhost:8080/scan/
+Content-Type: multipart/form-data; boundary=WebAppBoundary;
+
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="image.jpg"
+
+< C:\Users\HIF\PycharmProjects\grp-8\backend\springBoot\beagle-hunderasse-760x560.jpg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="scan";
+Content-Type: application/json;
+
+{
+  "longitude": 48,
+  "latitude": 15,
+  "email": "asdf@mail.com"
+}
+
+--WebAppBoundary--
+
+###
+GET http://localhost:8080/trashcans/trashcansByLocation
+Content-Type: application/json
+
+{
+  "longitude": 48,
+  "latitude": 15,
+  "radius": 2223200
+}
+
+###
+
+GET http://192.168.137.1:8080/trashcans/trashcansByLocation?longitude=15.6188375&latitude=48.2076627&radius=4700

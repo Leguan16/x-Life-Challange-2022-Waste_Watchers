@@ -1,0 +1,54 @@
+version: '3.1'
+services:
+  PostgreSQL:
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - docker_network
+
+  API:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: 'backend-docker.jar'
+    ports:
+      - "15431:8080"
+    depends_on:
+      - PostgreSQL
+      - PythonAPI
+    environment:
+      - SPRING_PORT=15431
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgreSQL:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - docker_network
+
+  PythonAPI:
+    build:
+      context: ../fastApiProject
+      dockerfile: Dockerfile
+    image: 'fastapi'
+    ports:
+      - "14344:14344"
+    networks:
+      - docker_network
+    expose:
+      - 14344
+
+networks:
+  docker_network:
+    driver: bridge
